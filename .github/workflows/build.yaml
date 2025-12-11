@@ -21,7 +21,7 @@ jobs:
         with:
           context: . # Look for the Dockerfile in the current directory
           push: false # Do not push to a registry (only build for testing)
-          tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ github.sha }}
+          tags: ${{ github.repository_owner }}/devops-starter-projects:latest, ${{ github.repository_owner }}/devops-starter-projects:${{ github.sha }}
           
       # 4. (Conceptual) Add a testing step here
       - name: Run Smoke Test (Check files exist)
