@@ -1,5 +1,4 @@
 # 1. Start from the official Nginx image (the base web server software)
-FROM nginx:latest
 FROM nginx:1.25.3-alpine
 
 # 2. Copy our index.html file into the default Nginx web directory
