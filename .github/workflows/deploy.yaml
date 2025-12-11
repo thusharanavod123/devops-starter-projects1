@@ -29,11 +29,15 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            # Define the specific image tag for this deployment using the commit SHA from the build workflow
+            IMAGE_WITH_SHA="ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }}"
+
             # Log in to GitHub Container Registry on the server
             echo ${{ secrets.GH_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
             # Pull the latest image from GHCR
             docker pull ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            docker pull $IMAGE_WITH_SHA
 
             # Stop and remove the old container if it exists
             docker stop my-nginx-webapp || true
@@ -41,5 +45,8 @@ jobs:
 
             # Run the new container, mapping port 80 on the server to port 80 in the container
             docker run -d --name my-nginx-webapp -p 80:80 ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            # Run the new container using the specific commit SHA tag for deterministic deployment
+            docker run -d --name my-nginx-webapp -p 80:80 $IMAGE_WITH_SHA
             
             echo "✅ Deployment successful!"
+            echo "✅ Deployment successful! Running image with SHA: ${{ github.event.workflow_run.head_sha }}"
