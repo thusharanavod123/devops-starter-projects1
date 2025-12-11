@@ -10,6 +10,10 @@ jobs:
   # 2. Define the main build and push job
   build-and-push:
     runs-on: ubuntu-latest # Use a fresh Linux virtual machine provided by GitHub
+    permissions:
+      contents: read # To checkout the code
+      packages: write # To push images to GitHub Packages
+
     env:
       IMAGE_NAME: devops-starter-projects # Define a clean image name
     steps:
