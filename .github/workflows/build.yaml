@@ -1,0 +1,43 @@
+name: CI - Build Docker Image
+
+# 1. Define when this workflow should run
+on:
+  push:
+    branches:
+      - main # Run whenever code is pushed to the 'main' branch
+
+jobs:
+  # 2. Define the main build job
+  build:
+    runs-on: ubuntu-latest # Use a fresh Linux virtual machine provided by GitHub
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Get the latest code from the repository
+
+      # 3. Use the Docker official action to build the image
+      # Note: We are only building locally for CI, not pushing to Docker Hub yet.
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: . # Look for the Dockerfile in the current directory
+          push: false # Do not push to a registry (only build for testing)
+          tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ github.sha }}
+          
+      # 4. (Conceptual) Add a testing step here
+      - name: Run Smoke Test (Check files exist)
+        run: |
+          echo "Simulating check that built image is valid."
+          if [ -f "Dockerfile" ]; then
+            echo "Dockerfile found. Build process verified."
+          else
+            echo "Error: Dockerfile not found."
+            exit 1
+          fi
+
+      # 5. Conceptual output for successful completion
+      - name: CI Success Message
+        run: |
+          echo "==================================================="
+          echo "CI Pipeline Successful! Image built on GitHub."
+          echo "The image tag would be based on the commit: ${{ github.sha }}"
+          echo "==================================================="
